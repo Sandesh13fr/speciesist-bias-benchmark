@@ -1,6 +1,6 @@
 ## Repository Structure
 ```text
-OpenPaws_Assesment/
+SpeciesBench/
 |-- .env.example
 |-- .gitignore
 |-- README.md

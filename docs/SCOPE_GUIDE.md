@@ -31,7 +31,7 @@ This document defines the current engineering constraints for the active root pr
 ## Repository Layout (Current)
 
 ```text
-OpenPaws_Assesment/
+SpeciesBench/
 |-- run_benchmark.py
 |-- app.py
 |-- config.py
