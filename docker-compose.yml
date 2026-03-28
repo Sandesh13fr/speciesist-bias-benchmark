@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: sqlite:///data/speciesist_bias.db
+    ports:
+      - "8501:8501"
+    volumes:
+      # Mount source for fast local iteration (code edits reflect without rebuild).
+      - ./:/app
+      # Keep SQLite data outside container filesystem for persistence across restarts.
+      - benchmark_data:/app/data
+    command: streamlit run app.py --server.port 8501 --server.address 0.0.0.0
+
+  benchmark:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: sqlite:///data/speciesist_bias.db
+    volumes:
+      # Mount source so benchmark command can be adjusted quickly during review.
+      - ./:/app
+      # Reuse the same SQLite volume as dashboard so runs and reports are shared.
+      - benchmark_data:/app/data
+    command: python run_benchmark.py --models all --export html
+    # Override example:
+    # docker compose run --rm benchmark python run_benchmark.py --models model_a,model_b --dry-run
+
+volumes:
+  # Named volume for persistent SQLite files.
+  benchmark_data:

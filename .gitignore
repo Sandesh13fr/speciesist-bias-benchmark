@@ -1,0 +1,63 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Packaging / build
+build/
+dist/
+*.egg-info/
+pip-wheel-metadata/
+
+# Tool caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# SQLite / local data
+*.db
+*.sqlite
+*.sqlite3
+
+# Streamlit local secrets/config
+.streamlit/secrets.toml
+.streamlit/credentials.toml
+
+# IDEs / editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Generated reports and artifacts
+reports/*.html
+reports/*.json
+artifacts/
+tmp/
+
+# Logs
+*.log
+
+# Docker overrides
+docker-compose.override.yml

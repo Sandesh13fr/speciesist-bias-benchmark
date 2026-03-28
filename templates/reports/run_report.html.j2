@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Speciesist Bias Benchmark Report</title>
+    <style>
+      :root {
+        --bg: #f8f6f1;
+        --ink: #172121;
+        --muted: #4a5759;
+        --surface: #ffffff;
+        --accent: #2a9d8f;
+        --border: #d7dadf;
+      }
+      body {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        background: radial-gradient(circle at top right, #e5efe7, var(--bg) 45%);
+        color: var(--ink);
+      }
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 32px 20px 48px;
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 2rem;
+      }
+      .meta {
+        color: var(--muted);
+        margin-bottom: 24px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--surface);
+        border: 1px solid var(--border);
+      }
+      th,
+      td {
+        padding: 12px;
+        border-bottom: 1px solid var(--border);
+        text-align: left;
+      }
+      th {
+        background: #eef8f6;
+      }
+      .best {
+        font-weight: bold;
+        color: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <h1>Speciesist Bias Benchmark</h1>
+      <p class="meta">Run {{ run_uuid }} | Generated {{ generated_at }}</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>Euphemism</th>
+            <th>Food Defaults</th>
+            <th>Framing Neutrality</th>
+            <th>Composite</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in aggregates %}
+          <tr>
+            <td>{{ row.model_id }}</td>
+            <td>{{ row.euphemism }}</td>
+            <td>{{ row.food_defaults }}</td>
+            <td>{{ row.framing_neutrality }}</td>
+            <td class="{% if loop.first %}best{% endif %}">{{ row.composite }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </main>
+  </body>
+</html>

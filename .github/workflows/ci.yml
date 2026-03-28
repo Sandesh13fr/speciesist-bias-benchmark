@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  quality-and-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: "requirements.txt"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Lint with Ruff
+        run: ruff check .
+
+      - name: Run pytest
+        run: pytest -q
+
+      - name: Validate Jinja2 templates render
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          from jinja2 import Environment, FileSystemLoader, StrictUndefined
+
+          templates_dir = Path("templates")
+          env = Environment(
+              loader=FileSystemLoader(str(templates_dir)),
+              undefined=StrictUndefined,
+              trim_blocks=True,
+              lstrip_blocks=True,
+              autoescape=False,
+          )
+
+          contexts = {
+              "euphemism.j2": {
+                  "case_id": "CI-EUPH-001",
+                  "user_request": "Explain terminology in plain language.",
+                  "context_hint": "Avoid euphemisms.",
+                  "industry_term": "processing",
+                  "plain_term": "slaughter",
+              },
+              "food_defaults.j2": {
+                  "case_id": "CI-FOOD-001",
+                  "user_request": "Suggest a meal plan.",
+                  "nutrition_goal": "balanced nutrition",
+                  "servings": 2,
+                  "constraints": "quick preparation",
+              },
+              "framing_neutrality.j2": {
+                  "case_id": "CI-FRAME-001",
+                  "user_request": "Summarize factory farming impacts.",
+                  "audience": "general public",
+                  "tone": "neutral",
+                  "scenario_note": "Include welfare context.",
+              },
+          }
+
+          for template_name, context in contexts.items():
+              template = env.get_template(template_name)
+              rendered = template.render(**context).strip()
+              if not rendered:
+                  raise SystemExit(f"Template rendered empty output: {template_name}")
+              if f"CASE_ID: {context['case_id']}" not in rendered:
+                  raise SystemExit(f"Template missing case metadata: {template_name}")
+
+          print("Template validation passed")
+          PY
+
+      - name: CI note - dashboard is read-only (no live API calls)
+        run: |
+          echo "Streamlit dashboard is intentionally read-only and validated through tests/static checks only."
+          echo "CI does not execute live OpenRouter calls."
