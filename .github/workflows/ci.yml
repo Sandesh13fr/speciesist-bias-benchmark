@@ -28,7 +28,7 @@ jobs:
         run: ruff check .
 
       - name: Run pytest
-        run: pytest -q
+        run: python -m pytest -q
 
       - name: Validate Jinja2 templates render
         run: |
