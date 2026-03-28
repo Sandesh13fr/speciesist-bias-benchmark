@@ -13,7 +13,7 @@
 [![SQLite](https://img.shields.io/badge/SQLite-Persistent%20Storage-003B57?style=flat-square&logo=sqlite&logoColor=white)](https://sqlite.org)
 [![OpenRouter](https://img.shields.io/badge/OpenRouter-Multi--Model%20API-6B4EFF?style=flat-square)](https://openrouter.ai)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22C55E?style=flat-square)](LICENSE)
-[![CI](https://img.shields.io/github/actions/workflow/status/yourusername/speciesist-bias-benchmark/ci.yml?style=flat-square&label=CI)](https://github.com/yourusername/speciesist-bias-benchmark/actions)
+[![CI](https://img.shields.io/github/actions/workflow/status/Sandesh13fr/speciesist-bias-benchmark/ci.yml?style=flat-square&label=CI)](https://github.com/Sandesh13fr/speciesist-bias-benchmark/actions)
 [![Built for OpenPAWS](https://img.shields.io/badge/Built%20for-OpenPAWS-2D6A4F?style=flat-square)](https://openpaws.ai)
 
 ---
@@ -40,22 +40,20 @@ Each dimension has its own Jinja2 prompt template, a deterministic scoring rubri
 
 ## Sample Results
 
-> *From a baseline run across 8 models. Higher score = more speciesist bias.*
+> *From repository baseline run `baseline-run` across 5 OpenRouter models. Higher score = less speciesist signal.*
 
 | Model | Euphemism ↑ | Food Default ↑ | Framing ↑ | Composite ↑ |
 |---|---|---|---|---|
-| `openai/gpt-4o` | 6.2 | 7.1 | 5.8 | **6.4** |
-| `openai/gpt-4o-mini` | 5.8 | 6.9 | 5.5 | **6.1** |
-| `anthropic/claude-3.5-sonnet` | 3.9 | 4.7 | 3.2 | **3.9** |
-| `anthropic/claude-3-haiku` | 4.1 | 5.3 | 3.9 | **4.4** |
-| `mistralai/mistral-7b-instruct` | 7.1 | 7.8 | 6.9 | **7.3** |
-| `meta-llama/llama-3.1-8b-instruct` | 6.8 | 7.3 | 6.5 | **6.9** |
-| `google/gemma-2-9b-it` | 5.5 | 6.2 | 5.1 | **5.6** |
-| `microsoft/phi-3-medium-128k-instruct` | 6.0 | 6.7 | 5.7 | **6.1** |
+| `anthropic/claude-3.5-sonnet` | 6.56 | 6.00 | 5.25 | **5.94** |
+| `openai/gpt-4o` | 5.56 | 4.92 | 7.32 | **5.93** |
+| `openai/gpt-4o-mini` | 6.23 | 3.75 | 7.63 | **5.87** |
+| `deepseek/deepseek-chat` | 5.46 | 3.00 | 7.31 | **5.26** |
+| `anthropic/claude-3-haiku` | 5.89 | 2.50 | 6.00 | **4.80** |
 
-**Score interpretation:** `0–3` Low bias · `4–6` Moderate bias · `7–10` High bias
+**Score interpretation:** `0–3` High speciesist signal · `4–6` Moderate signal · `7–10` Lower signal
 
-→ Full rubric: [`docs/SCORING_RUBRIC.md`](docs/SCORING_RUBRIC.md)
+→ Full rubric: [`docs/scoring_rubric.md`](docs/scoring_rubric.md)
+→ Baseline evidence: [`docs/baseline_results.md`](docs/baseline_results.md)
 
 ---
 
@@ -142,7 +140,7 @@ speciesist-bias-benchmark/
 ### 1. Clone and set up environment
 
 ```bash
-git clone https://github.com/yourusername/speciesist-bias-benchmark
+git clone https://github.com/Sandesh13fr/speciesist-bias-benchmark
 cd speciesist-bias-benchmark
 python -m venv venv
 source venv/bin/activate        # Windows: venv\Scripts\Activate.ps1
@@ -169,17 +167,17 @@ LOG_LEVEL=INFO
 ### 3. Validate setup (no API calls made)
 
 ```bash
-python run_benchmark.py validate
+python run_benchmark.py --dry-run --models all
 ```
 
 ### 4. Run your first benchmark
 
 ```bash
 # Minimal cost smoke test
-python run_benchmark.py run --models openai/gpt-4o-mini --dimensions euphemism --export html
+python run_benchmark.py --models openai/gpt-4o-mini --dimensions euphemism --export html --run-label smoke-run
 
 # Full benchmark across all configured models
-python run_benchmark.py run --models all --export html --run-label baseline
+python run_benchmark.py --models all --export html --run-label baseline-run
 ```
 
 ### 5. Open the dashboard
@@ -194,23 +192,17 @@ streamlit run app.py
 
 ```bash
 # List all configured models with OpenRouter IDs and estimated costs
-python run_benchmark.py list-models
+python run_benchmark.py --list-models
 
 # Dry run — validates templates and config, no API calls
-python run_benchmark.py run --models all --dry-run
+python run_benchmark.py --models all --dry-run
 
 # Targeted run: specific models and dimensions
-python run_benchmark.py run \
+python run_benchmark.py \
   --models openai/gpt-4o-mini,anthropic/claude-3-haiku \
   --dimensions euphemism,food_defaults \
   --export html \
   --run-label targeted-run
-
-# View all past runs
-python run_benchmark.py list-runs
-
-# View summary of a specific run
-python run_benchmark.py show-run --run-id <uuid>
 ```
 
 ---
@@ -223,9 +215,10 @@ python run_benchmark.py show-run --run-id <uuid>
 | `DATABASE_URL` | string | `sqlite:///speciesist_bias.db` | No | SQLite database path |
 | `DEFAULT_MODELS` | comma-separated | — | ✅ Yes | Models to benchmark |
 | `LOG_LEVEL` | string | `INFO` | No | `DEBUG`, `INFO`, `WARNING` |
-| `MAX_CONCURRENT_REQUESTS` | int | `3` | No | API concurrency limit |
-| `MAX_RETRIES` | int | `3` | No | Retry attempts on API failure |
-| `MAX_TOKENS` | int | `512` | No | Max tokens per model response |
+| `REQUEST_TIMEOUT_SECONDS` | int | `60` | No | HTTP timeout per API call |
+| `MAX_RETRIES` | int | `5` | No | Retry attempts on API failure |
+| `DEFAULT_MAX_TOKENS` | int | `350` | No | Max tokens per model response |
+| `RATE_LIMIT_RPM` | int | `30` | No | Client-side API request cap per minute |
 
 ---
 
@@ -320,8 +313,8 @@ GitHub Actions runs on every push and pull request:
 | Storage | SQLite + SQLAlchemy | Zero-setup, persistent, auditable |
 | Dashboard | Streamlit | Data-first UI without frontend overhead |
 | Charting | Plotly | Interactive, embeddable charts |
-| CLI | Typer | Clean, typed command-line interface |
-| Logging | Loguru | Structured, readable logs |
+| CLI | argparse | Explicit, lightweight command-line interface |
+| Logging | Python logging | Structured, configurable runtime logs |
 | Testing | pytest + pytest-cov | Coverage-enforced test suite |
 | Linting | Ruff | Fast, modern Python linter |
 | CI/CD | GitHub Actions | Automated quality gates |
@@ -334,10 +327,11 @@ GitHub Actions runs on every push and pull request:
 | Document | Description |
 |---|---|
 | [`APPROACH.md`](APPROACH.md) | Thinking, decisions, and design rationale |
-| [`docs/SCORING_RUBRIC.md`](docs/SCORING_RUBRIC.md) | Full 0–10 rubric for all 3 dimensions |
+| [`docs/scoring_rubric.md`](docs/scoring_rubric.md) | Full 0–10 rubric for all 3 dimensions |
 | [`docs/EXTENDING.md`](docs/EXTENDING.md) | How to add models and dimensions |
 | [`docs/OPENROUTER_SETUP.md`](docs/OPENROUTER_SETUP.md) | OpenRouter account and API key setup |
-| [`docs/SAMPLE_RESULTS.md`](docs/SAMPLE_RESULTS.md) | Example benchmark output |
+| [`docs/sample_results.md`](docs/sample_results.md) | Current baseline snapshot and interpretation |
+| [`docs/baseline_results.md`](docs/baseline_results.md) | Versioned 5-model baseline evidence |
 | [`docs/API_COST_ESTIMATION.md`](docs/API_COST_ESTIMATION.md) | Per-model cost breakdown |
 
 ---

@@ -19,7 +19,7 @@ from benchmark.openrouter_client import (
     ModelMetadataRecord,
     build_user_message,
 )
-from benchmark.report_generator import ModelAggregate, ReportGenerator
+from benchmark.report_generator import ModelAggregate, ReportGenerator, generate_html_report
 from config import Settings
 from database import db
 from database import models as db_models
@@ -476,8 +476,12 @@ class BenchmarkRunner:
             run_record.completed_at = db_models.utc_now()
 
             if export_html and scored_count > 0:
-                aggregates = self._aggregate_for_report(session=session, run_id=run_record.id)
-                report_path = str(self.report_generator.generate(run_uuid=run_record.run_label, aggregates=aggregates))
+                report_path = str(
+                    generate_html_report(
+                        database_url=self.settings.database_url,
+                        run_id=run_record.id,
+                    )
+                )
 
             run_id_value = run_record.id
             run_status_value = run_record.status
