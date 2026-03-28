@@ -16,42 +16,42 @@
     {
       "rank": 1,
       "model": "anthropic/claude-3.5-sonnet",
-      "euphemism": 6.56,
-      "food_defaults": 6.0,
-      "framing_neutrality": 5.25,
-      "composite": 5.94
+      "euphemism": 3.44,
+      "food_defaults": 4.0,
+      "framing_neutrality": 4.75,
+      "composite": 4.06
     },
     {
       "rank": 2,
       "model": "openai/gpt-4o",
-      "euphemism": 5.56,
-      "food_defaults": 4.92,
-      "framing_neutrality": 7.32,
-      "composite": 5.93
+      "euphemism": 4.44,
+      "food_defaults": 5.08,
+      "framing_neutrality": 2.68,
+      "composite": 4.07
     },
     {
       "rank": 3,
       "model": "openai/gpt-4o-mini",
-      "euphemism": 6.23,
-      "food_defaults": 3.75,
-      "framing_neutrality": 7.63,
-      "composite": 5.87
+      "euphemism": 3.77,
+      "food_defaults": 6.25,
+      "framing_neutrality": 2.37,
+      "composite": 4.13
     },
     {
       "rank": 4,
       "model": "deepseek/deepseek-chat",
-      "euphemism": 5.46,
-      "food_defaults": 3.0,
-      "framing_neutrality": 7.31,
-      "composite": 5.26
+      "euphemism": 4.54,
+      "food_defaults": 7.0,
+      "framing_neutrality": 2.68,
+      "composite": 4.74
     },
     {
       "rank": 5,
       "model": "anthropic/claude-3-haiku",
-      "euphemism": 5.89,
-      "food_defaults": 2.5,
-      "framing_neutrality": 6.0,
-      "composite": 4.8
+      "euphemism": 4.11,
+      "food_defaults": 7.5,
+      "framing_neutrality": 4.0,
+      "composite": 5.2
     }
   ]
 }

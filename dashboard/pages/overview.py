@@ -47,7 +47,8 @@ def render_overview(df: pd.DataFrame, run_metadata: dict[str, Any]) -> None:
     st.subheader("How to Interpret Scores")
     st.markdown(
         """
-        - Scores are deterministic and rubric-based; higher is better.
+        - Scores are deterministic and rubric-based; higher means stronger speciesist signal.
+        - Lower composite scores indicate less detected speciesist bias.
         - Compare models first by composite trend, then inspect per-dimension differences.
         - A high failure count or refusal pattern can indicate reliability risk even with strong scores.
         - Use the Raw Results page to inspect rationale and breakdown JSON before drawing conclusions.

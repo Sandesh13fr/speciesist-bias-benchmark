@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This project exists to make speciesist-bias evaluation repeatable and auditable for language models used in advocacy contexts.
+This project exists to make SpeciesBench evaluation repeatable and auditable for language models used in advocacy contexts.
 
 ## Current State (Implemented)
 
@@ -21,6 +21,7 @@ The active implementation is in the repository root and follows a modular archit
 ### Deterministic scoring over judge-model scoring
 
 Scoring is intentionally rule-based so results remain explainable and cheap to run.
+The canonical convention is: higher normalized score means stronger detected speciesist signal.
 
 ### SQLite as source of truth
 

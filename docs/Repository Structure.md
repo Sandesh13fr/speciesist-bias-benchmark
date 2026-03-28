@@ -43,7 +43,7 @@ SpeciesBench/
 |   |-- diagram_prompts.md
 |   |-- research_document.md
 |   |-- sample_results.md
-|   `-- scoring_rubric.md
+|   `-- SCORING_RUBRIC.md
 |-- tests/
 |   |-- test_scorer.py
 |   |-- test_templates.py

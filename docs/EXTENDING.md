@@ -17,7 +17,7 @@ This guide covers extension work for the current root architecture.
 3. Add deterministic scoring logic in `benchmark/scorer.py`.
 4. Update dimension dispatch in scorer and any reporting summaries.
 5. Add tests in `tests/test_scorer.py` and `tests/test_templates.py`.
-6. Update docs (`README.md`, `docs/scoring_rubric.md`, `docs/sample_results.md`).
+6. Update docs (`README.md`, `docs/SCORING_RUBRIC.md`, `docs/sample_results.md`).
 
 ## Add a New Model
 
@@ -39,7 +39,7 @@ When changing scoring behavior:
 2. Keep score range normalized to 0-10.
 3. Maintain machine-readable breakdown fields.
 4. Add regression tests for high, low, and edge cases.
-5. Update `docs/scoring_rubric.md`.
+5. Update `docs/SCORING_RUBRIC.md`.
 
 ## Extend the Dashboard
 

@@ -3,7 +3,6 @@
 > **A production-grade benchmarking framework for measuring speciesist bias in large language model responses.**
 
 <!-- BANNER IMAGE -->
-<!-- ![SpeciesBench Banner](docs/banner.png) -->
 <img width="2172" height="724" alt="ChatGPT Image Mar 29, 2026, 01_51_50 AM" src="https://github.com/user-attachments/assets/f9198c16-c55d-40e8-9525-816e11c9626d" />
 
 
@@ -26,6 +25,21 @@ There is currently no standardized, lightweight way to measure this. **SpeciesBe
 
 ---
 
+## Scoring Convention
+
+> **Higher score = more speciesist signal detected.**
+> **Lower score = less speciesist bias in the model's response.**
+
+This convention is consistent across all three benchmark dimensions, the scoring rubric ([`docs/SCORING_RUBRIC.md`](docs/SCORING_RUBRIC.md)), and all exported reports.
+
+| Score Range | Interpretation |
+|---|---|
+| `0–3` | Low speciesist signal — model uses neutral or explicit language |
+| `4–6` | Moderate signal — mixed or context-dependent framing |
+| `7–10` | High speciesist signal — model normalizes harm or defaults to animal products |
+
+---
+
 ## The 3 Benchmark Dimensions
 
 | Dimension | What It Measures | Speciesist Signal |
@@ -38,22 +52,25 @@ Each dimension has its own Jinja2 prompt template, a deterministic scoring rubri
 
 ---
 
-## Sample Results
+## Baseline Results
 
-> *From repository baseline run `baseline-run` across 5 OpenRouter models. Higher score = less speciesist signal.*
+> *Real benchmark run (`baseline-run`) executed against 5 OpenRouter models on 2026-03-28. Results are committed to [`docs/baseline_results.md`](docs/baseline_results.md) and the exported HTML report is available at [`reports/baseline-run.html`](reports/baseline-run.html).*
+>
+> **Lower composite score = less speciesist bias detected.**
 
-| Model | Euphemism ↑ | Food Default ↑ | Framing ↑ | Composite ↑ |
+| Model | Euphemism ↓ | Food Default ↓ | Framing ↓ | Composite ↓ |
 |---|---|---|---|---|
-| `anthropic/claude-3.5-sonnet` | 6.56 | 6.00 | 5.25 | **5.94** |
-| `openai/gpt-4o` | 5.56 | 4.92 | 7.32 | **5.93** |
-| `openai/gpt-4o-mini` | 6.23 | 3.75 | 7.63 | **5.87** |
-| `deepseek/deepseek-chat` | 5.46 | 3.00 | 7.31 | **5.26** |
-| `anthropic/claude-3-haiku` | 5.89 | 2.50 | 6.00 | **4.80** |
+| `anthropic/claude-3.5-sonnet` | 3.44 | 4.00 | 4.75 | **4.06** |
+| `openai/gpt-4o` | 4.44 | 5.08 | 2.68 | **4.07** |
+| `openai/gpt-4o-mini` | 3.77 | 6.25 | 2.37 | **4.13** |
+| `deepseek/deepseek-chat` | 4.54 | 7.00 | 2.69 | **4.74** |
+| `anthropic/claude-3-haiku` | 4.11 | 7.50 | 4.00 | **5.20** |
 
-**Score interpretation:** `0–3` High speciesist signal · `4–6` Moderate signal · `7–10` Lower signal
+**Score interpretation:** `0–3` Low signal · `4–6` Moderate signal · `7–10` High speciesist signal
 
-→ Full rubric: [`docs/scoring_rubric.md`](docs/scoring_rubric.md)
-→ Baseline evidence: [`docs/baseline_results.md`](docs/baseline_results.md)
+→ Full rubric: [`docs/SCORING_RUBRIC.md`](docs/SCORING_RUBRIC.md)
+→ Versioned baseline evidence: [`docs/baseline_results.md`](docs/baseline_results.md)
+→ Exported HTML report: [`reports/baseline-run.html`](reports/baseline-run.html)
 
 ---
 
@@ -64,7 +81,7 @@ run_benchmark.py (CLI entry point)
   ├── config.py                      → centralized env config
   ├── benchmark/runner.py            → orchestrates full pipeline
   │     ├── templates/*.j2           → Jinja2 prompt templates (3 dimensions)
-  │     ├── benchmark/openrouter_client.py   → async API client w/ retry logic
+  │     ├── benchmark/openrouter_client.py   → OpenRouter API client w/ retry + rate limiting
   │     ├── benchmark/scorer.py      → deterministic rubric scoring (0–10)
   │     ├── database/models.py + db.py       → SQLAlchemy ORM + SQLite
   │     └── benchmark/report_generator.py   → static HTML report export
@@ -103,7 +120,7 @@ speciesist-bias-benchmark/
 ├── benchmark/
 │   ├── runner.py                   ← benchmark orchestrator
 │   ├── scorer.py                   ← rubric-based scoring engine
-│   ├── openrouter_client.py        ← async OpenRouter API client
+│   ├── openrouter_client.py        ← OpenRouter API client with retry/rate limiting
 │   └── report_generator.py        ← HTML report generator
 ├── templates/
 │   ├── euphemism.j2
@@ -119,12 +136,13 @@ speciesist-bias-benchmark/
 │       ├── model_detail.py
 │       └── raw_results.py
 ├── docs/
-│   ├── SCORING_RUBRIC.md
+│   ├── SCORING_RUBRIC.md           ← canonical 0–10 rubric (higher = more biased)
 │   ├── EXTENDING.md
 │   ├── OPENROUTER_SETUP.md
-│   ├── SAMPLE_RESULTS.md
-│   └── architecture.png
-├── reports/                        ← auto-generated HTML reports land here
+│   ├── baseline_results.md         ← real committed baseline run results
+│   └── API_COST_ESTIMATION.md
+├── reports/
+│   └── baseline-run.html           ← exported HTML report from baseline run
 └── tests/
     ├── conftest.py
     ├── test_scorer.py
@@ -225,7 +243,7 @@ python run_benchmark.py \
 ## Running Tests
 
 ```bash
-# Run full test suite with coverage
+# Run full test suite with coverage output (optional local quality signal)
 pytest tests/ --cov=benchmark --cov=database --cov-report=html
 
 # Run a specific test file
@@ -235,7 +253,7 @@ pytest tests/test_scorer.py -v
 ruff check .
 ```
 
-Coverage target: **80%+** enforced in CI.
+Note: CI currently validates linting, tests, and template rendering. Coverage is available locally via `pytest-cov`.
 
 ---
 
@@ -263,7 +281,7 @@ Both services share a mounted SQLite volume so results persist between container
 1. Create `templates/your_dimension.j2`
 2. Add a scorer method to `benchmark/scorer.py`
 3. Register the dimension key in `config.py`
-4. Document the rubric in `docs/SCORING_RUBRIC.md`
+4. Document the rubric in `docs/SCORING_RUBRIC.md` — remember: **higher score = more speciesist signal**
 5. The dashboard picks it up automatically
 
 → Full guide: [`docs/EXTENDING.md`](docs/EXTENDING.md)
@@ -294,10 +312,10 @@ Both services share a mounted SQLite volume so results persist between container
 
 GitHub Actions runs on every push and pull request:
 
-- `ruff` linting + type checking
-- `pytest` with 80%+ coverage enforcement
+- `ruff` linting
+- `pytest` execution
 - Jinja2 template validation
-- Docker image build verification
+- read-only dashboard note (no live API calls)
 
 → Workflow: [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
 
@@ -315,7 +333,7 @@ GitHub Actions runs on every push and pull request:
 | Charting | Plotly | Interactive, embeddable charts |
 | CLI | argparse | Explicit, lightweight command-line interface |
 | Logging | Python logging | Structured, configurable runtime logs |
-| Testing | pytest + pytest-cov | Coverage-enforced test suite |
+| Testing | pytest + pytest-cov | Test suite with optional local coverage reports |
 | Linting | Ruff | Fast, modern Python linter |
 | CI/CD | GitHub Actions | Automated quality gates |
 | Containers | Docker + Compose | Reproducible deployment |
@@ -327,12 +345,12 @@ GitHub Actions runs on every push and pull request:
 | Document | Description |
 |---|---|
 | [`APPROACH.md`](APPROACH.md) | Thinking, decisions, and design rationale |
-| [`docs/scoring_rubric.md`](docs/scoring_rubric.md) | Full 0–10 rubric for all 3 dimensions |
+| [`docs/SCORING_RUBRIC.md`](docs/SCORING_RUBRIC.md) | Full 0–10 rubric — **higher score = more speciesist signal** |
 | [`docs/EXTENDING.md`](docs/EXTENDING.md) | How to add models and dimensions |
 | [`docs/OPENROUTER_SETUP.md`](docs/OPENROUTER_SETUP.md) | OpenRouter account and API key setup |
-| [`docs/sample_results.md`](docs/sample_results.md) | Current baseline snapshot and interpretation |
-| [`docs/baseline_results.md`](docs/baseline_results.md) | Versioned 5-model baseline evidence |
+| [`docs/baseline_results.md`](docs/baseline_results.md) | Real committed 5-model baseline run with evidence |
 | [`docs/API_COST_ESTIMATION.md`](docs/API_COST_ESTIMATION.md) | Per-model cost breakdown |
+| [`reports/baseline-run.html`](reports/baseline-run.html) | Exported HTML report from the baseline run |
 
 ---
 
@@ -344,6 +362,7 @@ Contributions are welcome. Before submitting a pull request:
 - Run `pytest tests/` and confirm all tests pass
 - Follow [Conventional Commits](https://www.conventionalcommits.org/) for commit messages
 - Add tests for any new scoring logic or API client changes
+- Ensure any new rubric documentation uses the canonical convention: **higher score = more speciesist signal detected**
 
 ---
 

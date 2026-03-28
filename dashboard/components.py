@@ -150,7 +150,7 @@ def render_model_comparison_table(df: pd.DataFrame) -> None:
     else:
         table["composite"] = 0.0
 
-    display = table.sort_values("composite", ascending=False).copy()
+    display = table.sort_values("composite", ascending=True).copy()
     for column in score_columns + ["composite"]:
         display[column] = display[column].round(2)
 

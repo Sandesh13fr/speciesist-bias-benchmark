@@ -14,7 +14,7 @@ Documentation is normalized as follows:
 	- `docs/diagram_prompts.md`
 	- `docs/research_document.md`
 	- `docs/sample_results.md`
-	- `docs/scoring_rubric.md`
+	- `docs/SCORING_RUBRIC.md`
 
 Core repository docs and config files:
 

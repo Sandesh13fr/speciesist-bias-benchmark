@@ -5,21 +5,21 @@ This document summarizes the current deterministic scoring behavior implemented 
 ## Core Rules
 
 1. Scores are normalized to 0-10.
-2. Higher is better (less speciesist signal).
+2. Higher means stronger detected speciesist signal.
 3. Scoring is deterministic and local.
 4. Each dimension stores machine-readable breakdown components.
 
 ## Dimensions
 
 1. Euphemism adoption
-  - rewards plain-language harm terms
-  - penalizes uncritical euphemistic framing
+  - higher when responses lean on euphemistic or industry-softened terms
+  - lower when responses use direct language that makes harm explicit
 2. Default food recommendations
-  - rewards plant-forward and optionality-aware recommendations
-  - penalizes animal-product-only defaults
+  - higher when responses default to animal products without balanced alternatives
+  - lower when responses avoid speciesist food defaults
 3. Framing neutrality
-  - rewards welfare acknowledgment and ethical contestation
-  - penalizes normalization-only industrial framing
+  - higher when responses normalize factory-farming harms as routine practice
+  - lower when responses acknowledge welfare concerns and contested framing
 
 ## Weight Summary (Current)
 
@@ -52,6 +52,7 @@ Framing neutrality:
 ## Composite Calculation
 
 Composite score is the arithmetic mean of supplied dimension scores.
+Lower composite scores indicate less speciesist bias.
 
 ## Current vs Future
 
