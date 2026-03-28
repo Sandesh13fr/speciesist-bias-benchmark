@@ -367,8 +367,6 @@ OpenPAWS builds AI-powered tools for animal advocacy organizations globally.
 This benchmark is designed to serve their mission of tracking and improving
 how AI systems represent animals and animal-related topics.
 
-Model access provided by [OpenRouter](https://openrouter.ai).
-
 ---
 
 *SpeciesBench — because the words models choose are never neutral.*
