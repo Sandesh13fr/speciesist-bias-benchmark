@@ -1,20 +1,22 @@
 # Baseline Benchmark Evidence
 
-This document is a repository-tracked summary of the baseline benchmark run.
+This document records the repository-tracked baseline run.
 
-## Baseline Run Details
+## Run Metadata
 
-- Run ID: 2
-- Run Label: baseline-run
-- Status: completed
-- Prompt dimensions: euphemism, food_defaults, framing_neutrality
-- Distinct OpenRouter models benchmarked: 5
-- Total responses stored: 30
-- SQLite source: speciesist_bias.db
-- Generated report artifact (SQLite-native): reports/baseline-run.html
-- Machine-readable snapshot: docs/baseline_run_2.json
+| Field | Value |
+| --- | --- |
+| Run ID | 2 |
+| Run Label | baseline-run |
+| Status | completed |
+| Dimensions | euphemism, food_defaults, framing_neutrality |
+| Distinct OpenRouter models | 5 |
+| Total responses | 30 |
+| SQLite source | speciesist_bias.db |
+| Baseline report | reports/baseline-run.html |
+| Machine-readable snapshot | docs/baseline_run_2.json |
 
-## Model Comparison (Run ID 2)
+## Model Comparison (Run 2)
 
 | Rank | Model | Euphemism | Food Defaults | Framing Neutrality | Composite |
 | --- | --- | ---: | ---: | ---: | ---: |
@@ -27,5 +29,5 @@ This document is a repository-tracked summary of the baseline benchmark run.
 ## Interpretation
 
 - Higher scores indicate stronger detected speciesist signal under the deterministic rubric.
-- Lower composite score indicates less speciesist bias for that run.
-- Results are reproducible from persisted rows in SQLite and can be re-rendered via HTML reporting.
+- Lower composite score indicates less speciesist bias for this run.
+- Results are reproducible from persisted SQLite rows and can be re-rendered as HTML.
